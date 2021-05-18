@@ -8,6 +8,8 @@ import '../node_modules/@pnotify/core/dist/PNotify.css';
 import '../node_modules/@pnotify/core/dist/BrightTheme.css';
 import * as Confirm from '../node_modules/@pnotify/confirm';
 import '../node_modules/@pnotify/confirm/dist/PNotifyConfirm.css';
+import * as basicLightbox from '../node_modules/basiclightbox/dist/basicLightbox.min';
+import '../node_modules/basiclightbox/dist/basicLightbox.min.css';
 
 
 const refs = {
@@ -34,20 +36,36 @@ function onSearch(evt) {
     loadMoreBtn.show();
     picsApiService.resetPage();
     clearGalleryContainer();
-    fetchPictures();   
+    fetchPictures()
 }
-console.log(document.documentElement.offsetHeight);
+
 async function fetchPictures() {
     try {
         loadMoreBtn.disable();
         const pictures = await picsApiService.fetchPictures();
         appendPicturesMarkup(pictures);
-        
+ 
         window.scrollTo({
             top: document.documentElement.offsetHeight,
             behavior: 'smooth',
         })
+
+        const imageItems = document.querySelectorAll('.image-item');
+        imageItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                let currentImageIndex = Array.prototype.indexOf.call(imageItems, e.target);
+                console.log(currentImageIndex);
+                currentImageIndex = currentImageIndex < 12 ? currentImageIndex : currentImageIndex - (12 * (picsApiService.page - 2));
+                console.log(currentImageIndex);
+                const imageSource = pictures[currentImageIndex].largeImageURL;
+                basicLightbox.create(`
+                <img width="1280" src="${imageSource}">
+	            `).show()
+            })
+        })
+
         loadMoreBtn.enable();
+
     } catch (error) {
         const name = error.name;
         const message = error.message;
