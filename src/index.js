@@ -50,22 +50,23 @@ async function fetchPictures() {
             behavior: 'smooth',
         })
 
-        const imageItems = document.querySelectorAll('.image-item');
-        imageItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                let currentImageIndex = Array.prototype.indexOf.call(imageItems, e.target);
-                console.log(currentImageIndex);
-                currentImageIndex = currentImageIndex < 12 ? currentImageIndex : currentImageIndex - (12 * (picsApiService.page - 2));
-                console.log(currentImageIndex);
-                const imageSource = pictures[currentImageIndex].largeImageURL;
-                basicLightbox.create(`
-                <img width="1280" src="${imageSource}">
-	            `).show()
-            })
-        })
-
         loadMoreBtn.enable();
 
+        // const imageItems = document.querySelectorAll('.image-item');
+        // imageItems.forEach(item => {
+        //     item.addEventListener('click', (e) => {
+        //         basicLightbox.create(`
+        //         <img src="${e.target.dataset.source}">
+	    //         `).show()
+        //     })
+        // })
+
+        refs.galleryContainer.addEventListener('click', e => {
+            if (e.target.nodeName === 'IMG') {
+                const instance = basicLightbox.create(`<img src="${e.target.dataset.source}">`);
+                instance.show();
+            }
+        })
     } catch (error) {
         const name = error.name;
         const message = error.message;
